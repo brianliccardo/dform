@@ -170,7 +170,7 @@
 					
 					switch (base.options.errorClassType) {
 						case 'parent':
-							ele.parent('div').addClass(base.options.errorClass);
+							ele.closest('div').addClass(base.options.errorClass);
 							base.debug('Add Err Class ['+base.options.errorClass+'] to parent div of ['+data.errFlds[i]+']');
 							break
 						case 'input':
