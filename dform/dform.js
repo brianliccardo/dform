@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.3.0
+ * dform.js v0.3.1
  */
 ;(function($) {
 	var dform = {
@@ -170,7 +170,7 @@
 					
 					switch (base.options.errorClassType) {
 						case 'parent':
-							ele.closest('div').addClass(base.options.errorClass);
+							ele.closest( base.options.errorClassSelector ).addClass(base.options.errorClass);
 							base.debug('Add Err Class ['+base.options.errorClass+'] to parent div of ['+data.errFlds[i]+']');
 							break
 						case 'input':
@@ -184,11 +184,7 @@
 			// scrolltop
 			var winScrollTop = $(window).scrollTop();
 			if (base.options.scrollTopOnError == true) {
-				if (winScrollTop > base.$formCnt.offset().top) {
-					$('html, body').animate({
-						scrollTop: base.$formCnt.offset().top
-					}, base.options.scrollSpeed);
-				}
+				base.scrollTop();
 			}
 			
 			// scroll first
@@ -197,7 +193,7 @@
 				if (firstError.length > 0) {
 					if (winScrollTop > firstError.offset().top) {
 						$('html, body').animate({
-							scrollTop: firstError.offset().top
+							scrollTop: firstError.offset().top - base.options.scrollOffsetOnError
 						}, base.options.scrollSpeed);
 					}
 				}
@@ -240,6 +236,21 @@
 						}
 						break;
 				}
+			}
+			
+			if (base.options.scrollTopOnSuccess == true) {
+				base.scrollTop();
+			}
+		},
+		
+		scrollTop : function() {
+			var base = this;
+			
+			var winScrollTop = $(window).scrollTop();
+			if (winScrollTop > base.$formCnt.offset().top) {
+				$('html, body').animate({
+					scrollTop: base.$formCnt.offset().top - base.options.scrollOffsetOnError
+				}, base.options.scrollSpeed);
 			}
 		},
 		
@@ -307,7 +318,7 @@
 					break;
 				default: // bootstrap
 					if ($('#dformModal').length == 0) {
-						$('body').append('<div class="modal fade" id="dformModal" role="dialog"aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="dformModalTitle"></h4></div><div class="modal-body"><p id="dformModalMessage"></p></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>');
+						$('body').append('<div class="modal" id="dformModal" role="dialog"aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="dformModalTitle"></h4></div><div class="modal-body"><p id="dformModalMessage"></p></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>');
 					}
 					$('#dformModalTitle').html(options.title); // set title
 					$('#dformModalMessage').html(options.message); // set message
@@ -335,7 +346,7 @@
 	// plugin
 	$.fn.dform = function(options, callback) {		
 		var defaults = {
-			debug		: true,	// debug mode
+			debug		: false,	// debug mode
 			bloadOpts	: {},	// bload options
 			
 			// callbacks
@@ -346,11 +357,14 @@
 			
 			// field error handling
 			errorClassType		: 'parent',
+			errorClassSelector	: 'div',
 			errorClass			: 'has-error',
 			errorFieldMsgClass	: 'dfrmErrorMsg', // class to add to custom field error messags. 
 			scrollTopOnError	: false, // scroll to top of container on error (usefull for large forms)
+			scrollOffsetOnError	: 0,
 			scrollFirstOnError	: false, // scroll to first error field (if out of view)
 			scrollSpeed			: 500, 
+			scrollTopOnSuccess	: true, // scroll to top of container on success (usefull for large forms)
 			
 			// single error message display
 			fullErrorType	: 'show',		// show, modal
