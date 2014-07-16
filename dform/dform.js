@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.3.1
+ * dform.js v0.3.2
  */
 ;(function($) {
 	var dform = {
@@ -222,6 +222,9 @@
 						break;
 					case 'closeModal':
 						parent.TINY.box.hide();
+						break;
+					case 'reloadParent':
+						parent.window.location = parent.window.location;
 						break;
 					case 'show':
 						base.$sucCnt.html(msg).show();
