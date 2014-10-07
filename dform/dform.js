@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.3.2
+ * dform.js v0.3.4
  */
 ;(function($) {
 	var dform = {
@@ -164,7 +164,7 @@
 			}
 			
 			// add error class
-			if (typeof data.errFlds !== 'undefined') {
+			if (typeof data.errFlds !== 'undefined' && data.errFlds != null) {
 				for (i=0; i < data.errFlds.length; i++) {
 					var ele = base.$form.find('[name="'+data.errFlds[i]+'"]');
 					
@@ -212,10 +212,10 @@
 				redirectTo = (typeof data.redirect !== 'undefined') ? data.redirect : (typeof base.options.redirect !== 'undefined') ? base.options.redirect : false;
 				switch (successType) {
 					case 'modalRedirect':
-						base.modalMessage({message:msg, type:'success', autohide:3, redirect:redirectTo});
+						base.modalMessage({message:msg, type:'success', autohide:base.options.modalAutoHide, redirect:redirectTo});
 						break;
 					case 'modal':
-						base.modalMessage({message:msg, type:'success', autohide:3});
+						base.modalMessage({message:msg, type:'success', autohide:base.options.modalAutoHide});
 						break;
 					case 'redirect':
 						base.redirect(redirectTo);
@@ -285,7 +285,7 @@
 						if (options.autohide !== false) {
 							setTimeout(function(){
 								$.fancybox.close();
-							}, (options.autohide * 1000));
+							}, (options.autohide));
 						}
 					}
 					break;
@@ -293,7 +293,7 @@
 					if (typeof TINY === 'undefined') {
 						alert('missing tinybox');
 					} else {
-						var tinyOpts = {html:options.message,animate:false,close:false,mask:false,boxid:options.type,autohide:options.autohide};
+						var tinyOpts = {html:options.message,animate:false,close:false,mask:false,boxid:options.type,autohide:(options.autohide / 1000)};
 						if (options.redirect !== false) {
 							tinyOpts.closejs = function(){
 								 base.redirect(options.redirect);
@@ -334,7 +334,7 @@
 						setTimeout(function(){
 							$('#dformModal').modal('hide');
 							if (options.redirect !== false) base.redirect(options.redirect);
-						}, (options.autohide * 1000));
+						}, (options.autohide));
 					}
 					break;
 			}
@@ -372,6 +372,7 @@
 			// single error message display
 			fullErrorType	: 'show',		// show, modal
 			modalType		: 'bootstrap',	// bootstrap / tinybox / fancybox / jqueryui,
+			modalAutoHide	: 3000,			// autohide time
 			successType		: 'showhide',	// showhide, show, redirect, modal, modalRedirect
 			redirect		: false			// location to redirect to on success
 		};
