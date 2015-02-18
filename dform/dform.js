@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.3.4
+ * dform.js v0.3.6
  */
 ;(function($) {
 	var dform = {
@@ -58,7 +58,7 @@
 			base.$sucCnt.hide();
 			
 			// hide error messages
-			base.$form.find('.'+base.options.errorFieldMsgClass).hide();
+			base.$formCnt.find('.'+base.options.errorFieldMsgClass).hide();
 			
 			base.$subBtn.prop('disabled',true);
 			base.$form.find('input, textarea').each(function(){
@@ -102,7 +102,7 @@
 							
 							// undo error class
 							if (base.options.errorClass !== false) {
-								base.$form.find('.'+base.options.errorClass).removeClass(base.options.errorClass);
+								base.$formCnt.find('.'+base.options.errorClass).removeClass(base.options.errorClass);
 							}
 							
 							// using success/error handlers
@@ -158,8 +158,8 @@
 			// show error field messages
 			if (data.errFlds && data.errFlds.length > 0) {
 				for (i=0; i < data.errFlds.length; i++) {
-					if (data.errMsgs && data.errMsgs[data.errFlds[i]]) base.$form.find('.dfrm_' + data.errFlds[i]).html(data.errMsgs[data.errFlds[i]]);
-					base.$form.find('.dfrm_' + data.errFlds[i]).show();
+					if (data.errMsgs && data.errMsgs[data.errFlds[i]]) base.$formCnt.find('.dfrm_' + data.errFlds[i]).html(data.errMsgs[data.errFlds[i]]);
+					base.$formCnt.find('.dfrm_' + data.errFlds[i]).show();
 				}
 			}
 			
@@ -209,7 +209,7 @@
 			var successType = (typeof data.successType !== 'undefined' && data.successType !== '') ? data.successType : base.options.successType;
 			
 			if (successType !== false) {
-				redirectTo = (typeof data.redirect !== 'undefined') ? data.redirect : (typeof base.options.redirect !== 'undefined') ? base.options.redirect : false;
+				redirectTo = (typeof data.redirect !== 'undefined' && data.redirect != null) ? data.redirect : (typeof base.options.redirect !== 'undefined') ? base.options.redirect : false;
 				switch (successType) {
 					case 'modalRedirect':
 						base.modalMessage({message:msg, type:'success', autohide:base.options.modalAutoHide, redirect:redirectTo});
