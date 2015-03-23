@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.3.6
+ * dform.js v0.3.7
  */
 ;(function($) {
 	var dform = {
@@ -40,7 +40,7 @@
 			
 			base.$form.submit(function(e){
 				e.preventDefault();
-				base.post();
+				base.post(base.$subBtn);
 			});
 		},
 		
