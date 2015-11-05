@@ -1,8 +1,12 @@
 /*!
- * dform.js v0.4.1
+ * dform.js v0.4.2
  */
 ;(function($) {
-	var dform = function($formCnt, options){
+	var dform = function(){
+
+	};
+	
+	dform.prototype.init = function($formCnt, options) {
 		var base = this;
 
 		base.options	= options;
@@ -381,9 +385,11 @@
 				var dformInst = $(this).data('dform');
 			} else {
 				$(this).data('dformInit', true);
-				var dformInst = new dform($(this), options);
+				var dformInst = new dform();
 				$(this).data('dform', dformInst);
 			}
+			
+			dformInst.init($(this), options);
 
 			return dformInst;
 		});
