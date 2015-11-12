@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.4.2
+ * dform.js v0.4.3
  */
 ;(function($) {
 	var dform = function(){
@@ -48,7 +48,7 @@
 	};
 	
 	dform.prototype.debug = function(msg) {
-		if (this.options.debug==true && typeof window.console !== 'undefined') console.log(msg);
+		if (this.options.debug==true && typeof window.console !== undefined) console.log(msg);
 	};
 
 	dform.prototype.post = function($clicked){
@@ -81,7 +81,7 @@
 			if (url == '') url = document.URL;
 
 			var form_data = base.$form.serializeArray();
-			if ($clicked != 'undefined' && $clicked.attr('name') && $clicked.attr('value')) {
+			if ($clicked != undefined && $clicked.attr('name') && $clicked.attr('value')) {
 				form_data.push({'name':$clicked.attr('name'),'value':$clicked.attr('value')});
 			}
 
@@ -101,7 +101,7 @@
 						return;
 					} else {
 						// custom modalType
-						if (typeof data.modalType !== 'undefined') base.options.modalType = data.modalType;
+						if (typeof data.modalType !== undefined) base.options.modalType = data.modalType;
 
 						// undo error class
 						if (base.options.errorClass !== false) {
@@ -145,8 +145,8 @@
 
 		// handle full message display 
 		if (base.options.fullErrorType !== false) {
-			var msg = (typeof data.msg !== 'undefined') ? data.msg : base.$errCnt.html(); // set message
-			var fullErrorType = (typeof data.fullErrorType !== 'undefined' && data.fullErrorType !== '') ? data.fullErrorType : base.options.fullErrorType; // override type
+			var msg = (typeof data.msg !== undefined) ? data.msg : base.$errCnt.html(); // set message
+			var fullErrorType = (typeof data.fullErrorType !== undefined && data.fullErrorType !== '') ? data.fullErrorType : base.options.fullErrorType; // override type
 
 			switch (fullErrorType) {
 				case 'modal':
@@ -167,7 +167,7 @@
 		}
 
 		// add error class
-		if (typeof data.errFlds !== 'undefined' && data.errFlds != null) {
+		if (typeof data.errFlds !== undefined && data.errFlds != null) {
 			for (i=0; i < data.errFlds.length; i++) {
 				var ele = base.$form.find('[name="'+data.errFlds[i]+'"]');
 
@@ -208,11 +208,11 @@
 
 		if ($.isFunction(base.options.onSuccess)) base.options.onSuccess.call(this, data);
 
-		var msg = (typeof data.msg !== 'undefined' && data.msg !== '') ? data.msg : base.$sucCnt.html();
-		var successType = (typeof data.successType !== 'undefined' && data.successType !== '') ? data.successType : base.options.successType;
+		var msg = (typeof data.msg !== undefined && data.msg !== '') ? data.msg : base.$sucCnt.html();
+		var successType = (typeof data.successType !== undefined && data.successType !== '') ? data.successType : base.options.successType;
 
 		if (successType !== false) {
-			redirectTo = (typeof data.redirect !== 'undefined' && data.redirect != null) ? data.redirect : (typeof base.options.redirect !== 'undefined') ? base.options.redirect : false;
+			redirectTo = (typeof data.redirect !== undefined && data.redirect != null) ? data.redirect : (typeof base.options.redirect !== undefined) ? base.options.redirect : false;
 			switch (successType) {
 				case 'modalRedirect':
 					base.modalMessage({message:msg, type:'success', autohide:base.options.modalAutoHide, redirect:redirectTo});
@@ -260,7 +260,7 @@
 		}
 	};
 	
-	dform.prototype.modalMessage = function(){
+	dform.prototype.modalMessage = function(options){
 		var base = this;
 
 		var defaults = {
@@ -276,7 +276,7 @@
 
 		switch(base.options.modalType) {
 			case 'fancybox':
-				if (typeof $.fancybox === 'undefined') {
+				if (typeof $.fancybox === undefined) {
 					alert('missing fancybox');
 				} else {
 					$.fancybox.open({
@@ -293,7 +293,7 @@
 				}
 				break;
 			case 'tinybox': // tinbox has display bug in bootstrap
-				if (typeof TINY === 'undefined') {
+				if (typeof TINY === undefined) {
 					alert('missing tinybox');
 				} else {
 					var tinyOpts = {html:options.message,animate:false,close:false,mask:false,boxid:options.type,autohide:(options.autohide / 1000)};
@@ -321,6 +321,19 @@
 						}
 					}
 				});
+				break;
+			case 'bootbox':
+				bootbox.dialog({
+					message: options.message,
+					title: options.title
+				});
+				
+				if (options.autohide !== false) {
+					setTimeout(function(){
+						bootbox.hideAll();
+						if (options.redirect !== false) base.redirect(options.redirect);
+					}, (options.autohide));
+				}
 				break;
 			default: // bootstrap
 				if ($('#dformModal').length == 0) {
