@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.4.3
+ * dform.js v0.4.4
  */
 ;(function($) {
 	var dform = function(){
@@ -48,7 +48,7 @@
 	};
 	
 	dform.prototype.debug = function(msg) {
-		if (this.options.debug==true && typeof window.console !== undefined) console.log(msg);
+		if (this.options.debug==true && window.console) console.log(msg);
 	};
 
 	dform.prototype.post = function($clicked){
@@ -81,7 +81,7 @@
 			if (url == '') url = document.URL;
 
 			var form_data = base.$form.serializeArray();
-			if ($clicked != undefined && $clicked.attr('name') && $clicked.attr('value')) {
+			if ($clicked && $clicked.attr('name') && $clicked.attr('value')) {
 				form_data.push({'name':$clicked.attr('name'),'value':$clicked.attr('value')});
 			}
 
@@ -101,7 +101,7 @@
 						return;
 					} else {
 						// custom modalType
-						if (typeof data.modalType !== undefined) base.options.modalType = data.modalType;
+						if (data.modalType) base.options.modalType = data.modalType;
 
 						// undo error class
 						if (base.options.errorClass !== false) {
@@ -145,8 +145,8 @@
 
 		// handle full message display 
 		if (base.options.fullErrorType !== false) {
-			var msg = (typeof data.msg !== undefined) ? data.msg : base.$errCnt.html(); // set message
-			var fullErrorType = (typeof data.fullErrorType !== undefined && data.fullErrorType !== '') ? data.fullErrorType : base.options.fullErrorType; // override type
+			var msg = (data.msg) ? data.msg : base.$errCnt.html(); // set message
+			var fullErrorType = (data.fullErrorType) ? data.fullErrorType : base.options.fullErrorType; // override type
 
 			switch (fullErrorType) {
 				case 'modal':
@@ -167,7 +167,7 @@
 		}
 
 		// add error class
-		if (typeof data.errFlds !== undefined && data.errFlds != null) {
+		if (data.errFlds) {
 			for (i=0; i < data.errFlds.length; i++) {
 				var ele = base.$form.find('[name="'+data.errFlds[i]+'"]');
 
@@ -208,11 +208,12 @@
 
 		if ($.isFunction(base.options.onSuccess)) base.options.onSuccess.call(this, data);
 
-		var msg = (typeof data.msg !== undefined && data.msg !== '') ? data.msg : base.$sucCnt.html();
-		var successType = (typeof data.successType !== undefined && data.successType !== '') ? data.successType : base.options.successType;
+		var msg = (data.msg) ? data.msg : base.$sucCnt.html();
+		var successType = (data.successType) ? data.successType : base.options.successType;
 
-		if (successType !== false) {
-			redirectTo = (typeof data.redirect !== undefined && data.redirect != null) ? data.redirect : (typeof base.options.redirect !== undefined) ? base.options.redirect : false;
+		if (successType) {
+			redirectTo = (data.redirect) ? data.redirect : (base.options.redirect) ? base.options.redirect : false;
+			
 			switch (successType) {
 				case 'modalRedirect':
 					base.modalMessage({message:msg, type:'success', autohide:base.options.modalAutoHide, redirect:redirectTo});
@@ -276,7 +277,7 @@
 
 		switch(base.options.modalType) {
 			case 'fancybox':
-				if (typeof $.fancybox === undefined) {
+				if (!$.fancybox) {
 					alert('missing fancybox');
 				} else {
 					$.fancybox.open({
@@ -293,7 +294,7 @@
 				}
 				break;
 			case 'tinybox': // tinbox has display bug in bootstrap
-				if (typeof TINY === undefined) {
+				if (!TINY) {
 					alert('missing tinybox');
 				} else {
 					var tinyOpts = {html:options.message,animate:false,close:false,mask:false,boxid:options.type,autohide:(options.autohide / 1000)};
