@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.4.4
+ * dform.js v0.4.5
  */
 ;(function($) {
 	var dform = function(){
@@ -90,6 +90,7 @@
 				cache: false,
 				url: url,
 				data: form_data,
+                beforeSend : base.options.beforeSend,
 				dataType: 'json',
 				success: function(data, status){
 					base.debug('success');
@@ -136,6 +137,23 @@
 			});
 		});
 	};
+	
+	dform.prototype.addErrorClass = function(fld) {
+		var base = this;
+
+		var ele = base.$form.find('[name="'+fld+'"]');
+
+		switch (base.options.errorClassType) {
+			case 'parent':
+				ele.closest( base.options.errorClassSelector ).addClass(base.options.errorClass);
+				base.debug('Add Err Class ['+base.options.errorClass+'] to parent div of ['+fld+']');
+				break
+			case 'input':
+				ele.addClass(base.options.errorClass);
+				base.debug('Add Err Class ['+base.options.errorClass+'] to input ['+fld+']');
+				break;
+		}
+	};
 
 	dform.prototype.handleError = function(data){
 		var base = this;
@@ -165,39 +183,58 @@
 				base.$formCnt.find('.dfrm_' + data.errFlds[i]).show();
 			}
 		}
+		
+		// add error class AND returned field messages
+		if (data.errFldMsgs !== undefined) {
+			base.debug("Going to add error messages");
+			for (var key in data.errFldMsgs) {
+				base.debug(" - "+key);
+				// error class
+				base.addErrorClass(key);
 
-		// add error class
-		if (data.errFlds) {
-			for (i=0; i < data.errFlds.length; i++) {
-				var ele = base.$form.find('[name="'+data.errFlds[i]+'"]');
-
-				switch (base.options.errorClassType) {
-					case 'parent':
-						ele.closest( base.options.errorClassSelector ).addClass(base.options.errorClass);
-						base.debug('Add Err Class ['+base.options.errorClass+'] to parent div of ['+data.errFlds[i]+']');
-						break
-					case 'input':
-						ele.addClass(base.options.errorClass);
-						base.debug('Add Err Class ['+base.options.errorClass+'] to input ['+data.errFlds[i]+']');
-						break;
+				// error messages
+				var ele = base.$form.find('[name="'+key+'"]');
+				var $errMsgsCnt = ele.closest( base.options.errorClassSelector ).find('.dfrmErrMsgs');
+				if ($errMsgsCnt.length > 0) {
+					$errMsgsCnt.show();
+					for (var i=0; i < data.errFldMsgs[key].length; i++) {
+						$errMsgsCnt.append('<li>'+data.errFldMsgs[key][i]+'</li>');
+					}
 				}
 			}
+		} else {
+			base.debug('No Error Messages');
+		}
+
+		// add error class
+		if (data.errFlds !== undefined && data.errFlds.length > 0) {
+			base.debug('Going to add error class to fields by '+base.options.errorClassType);
+			for (var i=0; i < data.errFlds.length; i++) {
+				base.addErrorClass(data.errFlds[i]);
+			}
+		} else {
+			base.debug('No Error Fields');
 		}
 
 		// scrolltop
 		var winScrollTop = $(window).scrollTop();
 		if (base.options.scrollTopOnError == true) {
+			base.debug('Scrolling to top');
 			base.scrollTop();
 		}
 
 		// scroll first
 		if (base.options.scrollFirstOnError == true) {
+			base.debug('Scrolling to first element with error class ['+base.options.errorClass+']');
 			var firstError = base.$formCnt.find('.'+base.options.errorClass+':first');
 			if (firstError.length > 0) {
 				if (winScrollTop > firstError.offset().top) {
+					base.debug('Scroll to ['+firstError.offset().top+']');
 					$('html, body').animate({
 						scrollTop: firstError.offset().top - base.options.scrollOffsetOnError
 					}, base.options.scrollSpeed);
+				} else {
+					base.debug('Not going to scroll cause ['+winScrollTop+'] <= ['+firstError.offset().top+']');
 				}
 			}
 		}
@@ -366,7 +403,7 @@
 		var defaults = {
 			debug		: false,	// debug mode
 			bloadOpts	: {},	// bload options
-			
+			beforeSend  : {}, // before send on ajax
 			// callbacks
 			onBefore	: false,
 			onComplete	: false,	// if set will not to success/error just returns data for custom handling
