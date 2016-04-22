@@ -1,5 +1,5 @@
 /*!
- * dform.js v0.4.5
+ * dform.js v0.4.6
  */
 ;(function($) {
 	var dform = function(){
@@ -403,7 +403,7 @@
 		var defaults = {
 			debug		: false,	// debug mode
 			bloadOpts	: {},	// bload options
-			beforeSend  : {}, // before send on ajax
+			beforeSend  : function(){}, // before send on ajax
 			// callbacks
 			onBefore	: false,
 			onComplete	: false,	// if set will not to success/error just returns data for custom handling
